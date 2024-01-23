@@ -2714,6 +2714,10 @@ int tail_nodeport_nat_egress_ipv4(struct __ctx_buff *ctx)
 
 		src_port = tunnel_gen_src_port_v4(&tuple);
 
+#if !(defined(ENABLE_CLUSTER_AWARE_ADDRESSING) && defined(ENABLE_INTER_CLUSTER_SNAT))
+		src_sec_identity = WORLD_IPV4_ID;
+#endif
+
 		/* The request came from outside, so we need to
 		 * set the security id in the tunnel header to WORLD_ID.
 		 * Otherwise, the remote node will assume, that the
