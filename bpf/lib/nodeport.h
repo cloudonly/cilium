@@ -2772,6 +2772,9 @@ static __always_inline int nodeport_lb4(struct __ctx_buff *ctx,
 	__u32 monitor = 0;
 	int ret, l4_off;
 
+	if (src_sec_identity == 0)
+		src_sec_identity = WORLD_IPV4_ID;
+
 	cilium_capture_in(ctx);
 
 	has_l4_header = ipv4_has_l4_header(ip4);
