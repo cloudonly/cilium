@@ -2724,7 +2724,18 @@ int tail_nodeport_nat_egress_ipv4(struct __ctx_buff *ctx)
 		 * request originated from a cluster node which will
 		 * bypass any netpol which disallows LB requests from
 		 * outside.
+		 *
+		 * Before passing the identity, make sure it's not a CIDR
+		 * identity, as these are __u32 values, but transporting them
+		 * via the VNI field in the VXLAN / Geneve header allows for
+		 * only 24 bits.
 		 */
+
+		if (identity_is_cidr_range(src_sec_identity)) {
+			ret = DROP_INVALID_IDENTITY;
+			goto drop_err;
+		}
+
 		ret = nodeport_add_tunnel_encap(ctx,
 						IPV4_DIRECT_ROUTING,
 						src_port,
